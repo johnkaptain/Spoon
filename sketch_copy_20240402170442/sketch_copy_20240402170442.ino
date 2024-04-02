@@ -8,17 +8,20 @@ Servo servoy;
 const int servox_pin = 3;
 const int servoy_pin = 4;
 
+int servox_thesi = 0;
+int servoy_thesi = 0;
+
+int speed = 0;
 
 MPU6050 sensor;
 
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
 
 void setup() {
   servox.attach(servox_pin);
   servoy.attach(servoy_pin);
 
-  
-  int16_t ax, ay, az;
-  int16_t gx, gy, gz;
   
   Wire.begin();
   Serial.begin(9600);
@@ -34,17 +37,34 @@ void setup() {
 
 void loop() {
   sensor.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-
-  int servox_thesi = map(gx, 20000, -20000, 0, 180);
-  int servoy_thesi = map(gy, 20000, -20000, 0, 180);
-
   Serial.print("Gyro X: ");
   Serial.println(gx);
   Serial.print("Gyro Y: ");
   Serial.println(gy);
 
-  servox.write(servox_thesi);
-  servoy.write(servoy_thesi);
+  if ( gx > speed && gy > speed) {
 
-  delay(100);
+    servox_thesi = map(gx, 20000, -20000, 0, 180);
+    servoy_thesi = map(gy, 20000, -20000, 0, 180);
+
+    Serial.print("Gyro X: ");
+    Serial.println(gx);
+    Serial.print("Gyro Y: ");
+    Serial.println(gy);
+
+    servox.write(servox_thesi);
+    servoy.write(servoy_thesi);
+    delay(100);
+    }
+  else if (gx > speed){
+    int servox_thesi = map(gx, 20000, -20000, 0, 180);
+    Serial.print("Gyro X: ");
+    Serial.println(gx);
+    delay(100);}
+  else if (gy > speed){
+    int servoy_thesi = map(gy, 20000, -20000, 0, 180);
+    Serial.print("Gyro Y: ");
+    Serial.println(gy);
+    delay(100);
+    }
 }
